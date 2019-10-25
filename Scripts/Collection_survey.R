@@ -9,7 +9,6 @@ library(cowplot)
 read_csv("Data/Collection_survey_RAW.csv")
 Collection_survey <- read_csv("Data/Collection_survey_RAW.csv")
 
-
 #exclude obs. for which year is unknown
 #convert <chr> to <dbl>
 #create an age column
@@ -60,8 +59,8 @@ plot_fixed <- ggplot(data = Collection_survey_fixed,
          mapping = aes(x = pH, y = formaldehyde, color = age)) +
   geom_point(size = 2) +
   scale_y_log10() +
+  geom_smooth(method = "lm", size = 0.5) +
   scale_colour_continuous(type = "viridis") +
-  
   labs(
     title = "Figure 1",
     y = "Formaldehyde Concentration (mg/L)",
@@ -70,7 +69,23 @@ plot_fixed <- ggplot(data = Collection_survey_fixed,
 ggsave(filename = "Results/Collection_survey_fixed.png", plot = plot_fixed, width = 12, height = 10, dpi = 300, units = "cm")
 
 
+#What is the relationship between age and formaldehyde concentration?
+#looks like specimens <10 years old have a lower mean formaldehyde concentration. 
+#creat new column with age>10 years
 
+categorical10yrs <- Collection_survey_fixed %>% 
+  mutate(category10yrs = age > 10)
+
+plot_F_age <- ggplot(data = categorical10yrs, 
+                     mapping = aes(x = category10yrs, y = formaldehyde)) +
+  geom_boxplot() +
+  scale_y_log10() +
+  labs(
+    title = "Figure 1",
+    y = "Formaldehyde Concentration (mg/L)", 
+    x = "Specimen > 10 years old")
+
+ggsave(filename = "Results/Collection_survey_F_age.png", plot = plot_F_age, width = 12, height = 10, dpi = 300, units = "cm")
 
 Collection_survey_unfixed <- Collection_survey %>% 
   filter(Year != "-") %>% 
@@ -90,4 +105,6 @@ plot_unfixed <- ggplot(data = Collection_survey_fixed,
     title = "Figure 1",
     y = "Age (yrs)",
     shape = "")
+
+
 
