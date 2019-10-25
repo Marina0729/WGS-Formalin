@@ -39,6 +39,13 @@ Collection_survey_full_plot <- ggplot(data = Collection_survey_tidy,
     color = "Age (yrs)",
     shape = "")
 
+#range of pH in fixed and unfixed specimens 
+
+pH_fixed_unfixed <- ggplot(data = Collection_survey_tidy, 
+                                      mapping = aes(y = pH, x = fixed)) +
+  geom_jitter(size = 2)
+
+
 
 ggsave(filename = "Results/Collection_survey_full.png", plot = Collection_survey_full_plot, width = 12, height = 10, dpi = 300, units = "cm")
 
@@ -106,5 +113,7 @@ plot_unfixed <- ggplot(data = Collection_survey_fixed,
     y = "Age (yrs)",
     shape = "")
 
+#Combining plots into Figure 1
 
+plot_grid(plot1, plot2, plot3, plot4)
 
