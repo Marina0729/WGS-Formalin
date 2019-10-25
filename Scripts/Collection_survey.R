@@ -1,6 +1,7 @@
 
 .libPaths(c("C:/Users/ale097/Data School/Packages"))
 library(tidyverse)
+library(broom)
 
 install.packages("cowplot")
 .libPaths(c("C:/Users/ale097/Data School/Packages"))
@@ -39,24 +40,40 @@ Collection_survey_full_plot <- ggplot(data = Collection_survey_tidy,
     color = "Age (yrs)",
     shape = "")
 
+#pie chart of fixed versus unfixed 
 
+Collection_survey_tidy %>% 
+  group_by(fixed)
+
+piechart <- ggplot(df, aes(x = "", y = value, fill=group))+
+  geom_bar(width = 1, stat = "identity")
 
 
 #range of pH in fixed and unfixed specimens 
 pH_fixed_unfixed <- ggplot(data = Collection_survey_tidy, 
                                       mapping = aes(y = pH, x = fixed)) +
-  geom_jitter() +
-  stat_summary(fun.y = mean, fun.ymin = mean, fun.ymax = mean,
-               geom = "crossbar", width = 0.5) +
+  geom_boxplot() +
   labs(
     x = "")
+
+
+t_test_A = Collection_survey_tidy %>%
+  t.test( pH ~ fixed, data=.)
+
+
 
 #range of age in fixed and unfixed specimens 
 age_fixed_unfixed <- ggplot(data = Collection_survey_tidy, 
                            mapping = aes(y = age, x = fixed)) +
+  stat_summary(fun.y = mean, fun.ymin = mean, fun.ymax = mean,
+               geom = "crossbar", width = 0.2, color = "red") +
   geom_jitter() +
   labs(
     x = "")
+
+t_test_result = Collection_survey_tidy %>%
+  t.test( pH ~ fixed, data=.)
+
 
 ggsave(filename = "Results/Collection_survey_full.png", plot = Collection_survey_full_plot, width = 12, height = 10, dpi = 300, units = "cm")
 
@@ -95,8 +112,10 @@ categorical10yrs <- Collection_survey_fixed %>%
 
 plot_F_age <- ggplot(data = categorical10yrs, 
                      mapping = aes(x = category10yrs, y = formaldehyde)) +
-  geom_boxplot() +
+  geom_jitter() +
   scale_y_log10() +
+  stat_summary(fun.y = mean, fun.ymin = mean, fun.ymax = mean,
+               geom = "crossbar", width = 0.2, color = "red") +
   labs(
     y = "Formaldehyde Concentration (mg/L)", 
     x = "Specimen > 10 years old")
