@@ -39,13 +39,24 @@ Collection_survey_full_plot <- ggplot(data = Collection_survey_tidy,
     color = "Age (yrs)",
     shape = "")
 
-#range of pH in fixed and unfixed specimens 
 
+
+
+#range of pH in fixed and unfixed specimens 
 pH_fixed_unfixed <- ggplot(data = Collection_survey_tidy, 
                                       mapping = aes(y = pH, x = fixed)) +
-  geom_jitter(size = 2)
+  geom_jitter() +
+  stat_summary(fun.y = mean, fun.ymin = mean, fun.ymax = mean,
+               geom = "crossbar", width = 0.5) +
+  labs(
+    x = "")
 
-
+#range of age in fixed and unfixed specimens 
+age_fixed_unfixed <- ggplot(data = Collection_survey_tidy, 
+                           mapping = aes(y = age, x = fixed)) +
+  geom_jitter() +
+  labs(
+    x = "")
 
 ggsave(filename = "Results/Collection_survey_full.png", plot = Collection_survey_full_plot, width = 12, height = 10, dpi = 300, units = "cm")
 
@@ -62,18 +73,17 @@ Collection_survey_fixed <- Collection_survey %>%
   filter(fixed == "fixed")
   
   
-plot_fixed <- ggplot(data = Collection_survey_fixed, 
+plot_F_pH <- ggplot(data = Collection_survey_fixed, 
          mapping = aes(x = pH, y = formaldehyde, color = age)) +
   geom_point(size = 2) +
   scale_y_log10() +
   geom_smooth(method = "lm", size = 0.5) +
   scale_colour_continuous(type = "viridis") +
   labs(
-    title = "Figure 1",
     y = "Formaldehyde Concentration (mg/L)",
     color = "Age (yrs)")
 
-ggsave(filename = "Results/Collection_survey_fixed.png", plot = plot_fixed, width = 12, height = 10, dpi = 300, units = "cm")
+ggsave(filename = "Results/Collection_survey_F_pH.png", plot = plot_F_pH, width = 12, height = 10, dpi = 300, units = "cm")
 
 
 #What is the relationship between age and formaldehyde concentration?
@@ -88,7 +98,6 @@ plot_F_age <- ggplot(data = categorical10yrs,
   geom_boxplot() +
   scale_y_log10() +
   labs(
-    title = "Figure 1",
     y = "Formaldehyde Concentration (mg/L)", 
     x = "Specimen > 10 years old")
 
@@ -115,5 +124,6 @@ plot_unfixed <- ggplot(data = Collection_survey_fixed,
 
 #Combining plots into Figure 1
 
-plot_grid(plot1, plot2, plot3, plot4)
+plot_grid(pH_fixed_unfixed, age_fixed_unfixed, plot_F_age, plot_F_pH)
+
 
